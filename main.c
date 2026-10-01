@@ -34,12 +34,27 @@ typedef struct {
     int number_token;
 } HexTile;
 
+// defining a player
+
+typedef struct{
+    char name[20];
+    int resources[6]; // 6- to match the types of resources
+    int victory_points;
+    int roads_left;
+    int settlement_left;
+    int city_left;
+} player;
+
 // function to simulate rolling 2 die
 
 int roll_die(){
     return(rand() % 6) + 1;
 }
 
+void print_player_status(player p){
+    printf("Player: %s  Victory points: %d\n", p.name, p.victory_points);
+    printf("Resources -> Brick: %d | Lumber: %d | Wool: %d | Grain: %d | Ore: %d \n", p.resources[BRICK], p.resources[LUMBER], p.resources[WOOL], p.resources[GRAIN], p.resources[ORE]);
+}
 
 int main(){
     srand(time(NULL));
@@ -58,6 +73,18 @@ int main(){
         {19, GRAIN,  11}
     };
 
+    player p1 = {
+        .name = "Alice",
+        .resources = {0,0,0,0,0,0},
+        .victory_points = 0,
+        .roads_left = 13,
+        .settlement_left = 10,
+        .city_left = 5
+    };
+
+    printf("============INITIAL PLAYER STATUS=================\n\n");
+    print_player_status(p1);
+
     // simulating 10 turns of rolling die
 
     for(int i=0;i<10;i++){
@@ -66,7 +93,7 @@ int main(){
         int total = die1 + die2;
     
         printf("\n=====================================\n");
-        printf("Turn %d\n",i);
+        printf("\nTurn %d\n",i);
         printf("Die1: %d, Die2: %d, Total = %d\n",die1,die2,total);
 
         if(total == 7){
@@ -79,7 +106,10 @@ int main(){
 
         for(int i = 0; i < 19; i++){
             if(board[i].number_token == total){
-                printf("Tile %2d (%-6s) produced resources!\n",board[i].id, resource_to_string(board[i].resource));
+                ResourceType res = board[i].resource;
+                printf("Tile %2d (%s) produced resources!\n",board[i].id, resource_to_string(res));
+
+                p1.resources[res]++;
                 prod_count++;
             }
         }
@@ -87,6 +117,9 @@ int main(){
         if (prod_count == 0){
             printf("No tile produced resources", total);
         }
+
+        printf("===Player status===\n");
+        print_player_status(p1);
     }
     return 0;
 }
